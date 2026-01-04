@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #2a2a2a;
+        }
+
+        .container {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #c9c5a5;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+
+        .color-preview-small {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-code-display {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .picker-area {
+            display: flex;
+            gap: 15px;
+        }
+
+        .saturation-brightness {
+            width: 300px;
+            height: 250px;
+            position: relative;
+            border-radius: 8px;
+            cursor: crosshair;
+            background: linear-gradient(to right, #fff, #ff0000);
+        }
+
+        .saturation-brightness::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent, #000);
+            border-radius: 8px;
+        }
+
+        .picker-cursor {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .lightness-slider {
+            width: 30px;
+            height: 250px;
+            position: relative;
+            border-radius: 8px;
+            cursor: pointer;
+            background: linear-gradient(to bottom, 
+                rgba(255, 255, 255, 0.5),
+                rgba(128, 128, 128, 0.5),
+                rgba(0, 0, 0, 0.5)
+            );
+        }
+
+        .hue-slider {
+            width: 30px;
+            height: 250px;
+            position: relative;
+            border-radius: 8px;
+            cursor: pointer;
+            background: linear-gradient(to bottom,
+                #ff0000 0%,
+                #ffff00 17%,
+                #00ff00 33%,
+                #00ffff 50%,
+                #0000ff 67%,
+                #ff00ff 83%,
+                #ff0000 100%
+            );
+        }
+
+        .slider-cursor {
+            position: absolute;
+            left: 50%;
+            width: 36px;
+            height: 6px;
+            background: white;
+            border: 1px solid #333;
+            border-radius: 2px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="color-preview-small" id="previewSmall"></div>
+            <div class="color-code-display" id="colorDisplay">#ced5baff</div>
+        </div>
+        
+        <div class="picker-area">
+            <div class="saturation-brightness" id="sbPicker">
+                <div class="picker-cursor" id="sbCursor"></div>
+            </div>
+            
+            <div class="controls">
+                <div class="lightness-slider" id="lightnessSlider">
+                    <div class="slider-cursor" id="lightnessCursor"></div>
+                </div>
+                
+                <div class="hue-slider" id="hueSlider">
+                    <div class="slider-cursor" id="hueCursor"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let hue = 70;
+        let saturation = 100;
+        let brightness = 100;
+        let lightness = 50;
+
+        const sbPicker = document.getElementById('sbPicker');
+        const sbCursor = document.getElementById('sbCursor');
+        const hueSlider = document.getElementById('hueSlider');
+        const hueCursor = document.getElementById('hueCursor');
+        const lightnessSlider = document.getElementById('lightnessSlider');
+        const lightnessCursor = document.getElementById('lightnessCursor');
+        const previewSmall = document.getElementById('previewSmall');
+        const colorDisplay = document.getElementById('colorDisplay');
+
+        function hslToHex(h, s, l) {
+            l /= 100;
+            const a = s * Math.min(l, 1 - l) / 100;
+            const f = n => {
+                const k = (n + h / 30) % 12;
+                const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                return Math.round(255 * color).toString(16).padStart(2, '0');
+            };
+            return `#${f(0)}${f(8)}${f(4)}`;
+        }
+
+        function updateColor() {
+            const color = hslToHex(hue, saturation, lightness);
+            previewSmall.style.backgroundColor = color;
+            colorDisplay.textContent = color;
+            sbPicker.style.background = `linear-gradient(to right, #fff, hsl(${hue}, 100%, 50%))`;
+        }
+
+        function updateSBPicker(e) {
+            const rect = sbPicker.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            
+            x = Math.max(0, Math.min(x, rect.width));
+            y = Math.max(0, Math.min(y, rect.height));
+            
+            saturation = (x / rect.width) * 100;
+            const brightnessFromY = 100 - (y / rect.height) * 100;
+            lightness = 50 + (brightnessFromY - 50) * (1 - saturation / 200);
+            
+            sbCursor.style.left = x + 'px';
+            sbCursor.style.top = y + 'px';
+            
+            updateColor();
+        }
+
+        function updateHueSlider(e) {
+            const rect = hueSlider.getBoundingClientRect();
+            let y = e.clientY - rect.top;
+            y = Math.max(0, Math.min(y, rect.height));
+            
+            hue = (y / rect.height) * 360;
+            hueCursor.style.top = y + 'px';
+            
+            updateColor();
+        }
+
+        function updateLightnessSlider(e) {
+            const rect = lightnessSlider.getBoundingClientRect();
+            let y = e.clientY - rect.top;
+            y = Math.max(0, Math.min(y, rect.height));
+            
+            lightness = 100 - (y / rect.height) * 100;
+            lightnessCursor.style.top = y + 'px';
+            
+            updateColor();
+        }
+
+        let isDraggingSB = false;
+        let isDraggingHue = false;
+        let isDraggingLightness = false;
+
+        sbPicker.addEventListener('mousedown', (e) => {
+            isDraggingSB = true;
+            updateSBPicker(e);
+        });
+
+        hueSlider.addEventListener('mousedown', (e) => {
+            isDraggingHue = true;
+            updateHueSlider(e);
+        });
+
+        lightnessSlider.addEventListener('mousedown', (e) => {
+            isDraggingLightness = true;
+            updateLightnessSlider(e);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDraggingSB) updateSBPicker(e);
+            if (isDraggingHue) updateHueSlider(e);
+            if (isDraggingLightness) updateLightnessSlider(e);
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDraggingSB = false;
+            isDraggingHue = false;
+            isDraggingLightness = false;
+        });
+
+        colorDisplay.addEventListener('click', () => {
+            navigator.clipboard.writeText(colorDisplay.textContent);
+        });
+
+        sbCursor.style.left = '150px';
+        sbCursor.style.top = '0px';
+        hueCursor.style.top = '48px';
+        lightnessCursor.style.top = '125px';
+        updateColor();
+    </script>
+</body>
+</html>

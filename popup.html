@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body id="body">
+
+    <div class="row">
+
+
+        <div class="setting">
+            <h3>Brightness</h3>
+            <input type="range" id="brightness" class="slider" min="0" max="100" value="100">
+            <h4 id="value_brightness"></h4>
+        </div>
+        <div class="setting">
+            <h3>Width</h3>
+            <input type="text" class="text_field" id="width" value="100">
+            <h4 id="value_width"></h4>
+        </div>
+        <div class="setting">
+            <h3>Size</h3>
+            <input type="text" class="text_field" id="fsize" value="10">
+            <h4 id="value_fsize"></h4>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="setting">
+            <h3>Color</h3>
+            <input type="color" class="color_field" id="fcolor" value="#000">
+            <h4 id="value_fcolor"></h4>
+        </div>
+        <div class="setting">
+            <h3>Background</h3>
+            <input type="color" class="color_field" id="background" value="#ffffff">
+            <h4 id="value_background"></h4>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="setting">
+            <h3>Font</h3>
+            <div id="fbuttons">
+                <button class="font" id="SF Pro Display">San Francisco</button>
+                <button class="font" id="Garamond">Garamond</button>
+                <button class="font" id="Georgia">Georgia</button>
+                <button class="font" id="Lexend">Lexend</button>
+                <button class="font" id="Helvetica">Helvetica</button>
+                <button class="font" id="Tahoma">Tahoma</button>
+                <button class="font" id="Quicksand">Quicksand</button>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="setting">
+            <h3>Preview</h3>
+            <p id="demo">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur auctor aliquet libero, ut
+                finibus ex vestibulum a. Sed vel accumsan risus, nec pharetra tellus. Sed sapien est, facilisis eu augue
+                in,
+                dictum elementum mauris. Ut purus ante, dignissim vel pulvinar et, malesuada ac sapien. Duis malesuada
+                hendrerit eros, sit amet gravida est consectetur eget. Sed ultricies risus vitae odio rhoncus iaculis.
+                Pellentesque malesuada orci vulputate, mollis risus id, sollicitudin lectus. Maecenas ornare enim sed
+                velit
+                facilisis, eget egestas odio gravida. Maecenas at mattis enim. Curabitur eu ullamcorper elit, non
+                viverra
+                tortor.</p>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="setting">
+            <button id="set"><strong>SET</strong></button>
+        </div>
+    </div>
+    <script src="extension_commands.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

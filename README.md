@@ -1,2 +1,2 @@
-# ao3_extension
-A chrome extension for reading mode settings in AO3
+# Archive Of Our Own reading mode extension
+A Chrome extension for reading mode settings in AO3
